@@ -1,3 +1,5 @@
+extern crate core;
+
 mod parsing;
 
 fn main() {

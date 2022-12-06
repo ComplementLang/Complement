@@ -1,7 +1,8 @@
 pub mod lexer;
 pub mod parser;
+pub mod ast;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum Operator {
     Plus,
     Minus,
@@ -65,6 +66,13 @@ impl Operator {
             '\\' => Some(Operator::Difference),
             '∆' => Some(Operator::SymmetricDifference),
             _ => None
+        }
+    }
+
+    fn arity(&self) -> i32 {
+        match self {
+            Operator::Not => 1,
+            _ => 2
         }
     }
 }
