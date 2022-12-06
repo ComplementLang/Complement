@@ -5,6 +5,13 @@ use super::Operator;
 pub enum AstNode {
     Number(i64),
     Variable(String),
-    UnaryExpression(Operator, Box<AstNode>),
-    BinaryExpression(Box<AstNode>, Operator, Box<AstNode>)
+    UnaryExpression {
+        operator: Operator,
+        operand: Box<AstNode>
+    },
+    BinaryExpression {
+        left: Box<AstNode>,
+        operator: Operator,
+        right: Box<AstNode>
+    }
 }

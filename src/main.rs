@@ -7,5 +7,6 @@ fn main() {
     let file = std::fs::read_to_string(&args[1]).expect("File not found");
     let tokens = parsing::lexer::lex(&file);
     println!("{:?}", tokens);
-    parsing::parser::parse(&tokens);
+    let parsed = parsing::parser::parse(&tokens);
+    println!("{:?}", parsed);
 }
