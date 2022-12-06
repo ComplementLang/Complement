@@ -1,8 +1,6 @@
-pub mod lexer;
-pub mod parser;
-pub mod ast;
+use std::fmt::Debug;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Operator {
     Plus,
     Minus,
@@ -10,6 +8,7 @@ pub enum Operator {
     Divide,
     Modulo,
     Exponent,
+    Negate,
 
     Equal,
     NotEqual,
@@ -31,7 +30,8 @@ pub enum Operator {
     Union,
     Intersection,
     Difference,
-    SymmetricDifference
+    SymmetricDifference,
+    Size
 }
 
 impl Operator {
@@ -43,6 +43,7 @@ impl Operator {
             '/' => Some(Operator::Divide),
             '%' => Some(Operator::Modulo),
             '^' => Some(Operator::Exponent),
+            '¯' => Some(Operator::Negate),
 
             '=' => Some(Operator::Equal),
             '≠' => Some(Operator::NotEqual),
@@ -65,14 +66,36 @@ impl Operator {
             '∩' => Some(Operator::Intersection),
             '\\' => Some(Operator::Difference),
             '∆' => Some(Operator::SymmetricDifference),
+            '#' => Some(Operator::Size),
             _ => None
         }
     }
 
-    fn arity(&self) -> i32 {
+    pub fn arity(&self) -> i32 {
         match self {
-            Operator::Not => 1,
+            Operator::Not | Operator::Negate | Operator::Size => 1,
             _ => 2
+        }
+    }
+
+    pub fn precedence(&self) -> i32 {
+        match self {
+            Operator::Contains | Operator::NotContains | Operator::Subset | Operator::StrictSubset
+            | Operator::Superset | Operator::StrictSuperset | Operator::Union | Operator::Intersection
+            | Operator::Difference | Operator::SymmetricDifference => 1,
+
+            Operator::Or | Operator::And | Operator::Implies => 2,
+
+            Operator::Equal | Operator::NotEqual | Operator::LessThan | Operator::GreaterThan
+            | Operator::LessThanEqual | Operator::GreaterThanEqual => 3,
+
+            Operator::Plus | Operator::Minus => 4,
+
+            Operator::Multiply | Operator::Divide | Operator::Modulo => 5,
+
+            Operator::Exponent => 6,
+
+            Operator::Not | Operator::Negate | Operator::Size => 7
         }
     }
 }

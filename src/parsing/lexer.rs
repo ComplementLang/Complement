@@ -1,15 +1,16 @@
+use num_bigint::BigInt;
 use super::Operator;
 
 #[derive(Debug)]
 pub enum Token {
     Operator(Operator),
     Identifier(String),
-    Number(i64),
+    Number(BigInt),
+    String(String),
     OpenBrace,
     CloseBrace,
     OpenParen,
-    CloseParen,
-    Quote
+    CloseParen
 }
 
 pub fn lex(str: &String) -> Vec<Token> {
@@ -23,7 +24,17 @@ pub fn lex(str: &String) -> Vec<Token> {
             ')' => tokens.push(Token::CloseParen),
             '{' => tokens.push(Token::OpenBrace),
             '}' => tokens.push(Token::CloseBrace),
-            '"' => tokens.push(Token::Quote),
+            '"' => {
+                let mut string = String::new();
+                while let Some(next_char) = iter.get(i) {
+                    i += 1;
+                    if *next_char == '"' && iter[i - 2] != '\\' {
+                        break;
+                    }
+                    string.push(*next_char);
+                }
+                tokens.push(Token::String(string));
+            }
             ' ' => continue,
             _ => {
                 if next_char.is_ascii_digit() {
@@ -37,7 +48,7 @@ pub fn lex(str: &String) -> Vec<Token> {
                             break;
                         }
                     }
-                    tokens.push(Token::Number(number.parse().unwrap()));
+                    tokens.push(Token::Number(BigInt::parse_bytes(number.as_bytes(), 10).unwrap()));
                 } else if next_char.is_ascii_alphabetic() {
                     let mut identifier = String::new();
                     identifier.push(*next_char);
