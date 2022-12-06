@@ -7,7 +7,6 @@ pub enum Operator {
     Multiply,
     Divide,
     Modulo,
-    Exponent,
     Negate,
 
     Equal,
@@ -42,7 +41,6 @@ impl Operator {
             '*' => Some(Operator::Multiply),
             '/' => Some(Operator::Divide),
             '%' => Some(Operator::Modulo),
-            '^' => Some(Operator::Exponent),
             '¯' => Some(Operator::Negate),
 
             '=' => Some(Operator::Equal),
@@ -92,8 +90,6 @@ impl Operator {
             Operator::Plus | Operator::Minus => 4,
 
             Operator::Multiply | Operator::Divide | Operator::Modulo => 5,
-
-            Operator::Exponent => 6,
 
             Operator::Not | Operator::Negate | Operator::Size => 7
         }
