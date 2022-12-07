@@ -1,12 +1,12 @@
-use num_bigint::BigInt;
+use crate::parsing::expr::Expression;
 use super::lexer::Token;
-use super::Operator;
 
-pub fn parse(tokens: &Vec<Token>) -> Option<AstNode> {
+
+pub fn parse(tokens: &Vec<Token>) -> Option<Expression> {
     parse_expression(tokens)
 }
 
-fn parse_expression(tokens: &[Token]) -> Option<AstNode> {
+fn parse_expression(tokens: &[Token]) -> Option<Expression> {
     let lowest = lowest_op(tokens);
     if let Some(lowest_index) = lowest {
         let op = match &tokens[lowest_index] {
@@ -16,9 +16,9 @@ fn parse_expression(tokens: &[Token]) -> Option<AstNode> {
         let right = Box::new(parse_expression(&tokens[lowest_index + 1..])
             .expect("Failed to parse right side of expression"));
         return if op.arity() == 1 {
-            Some(AstNode::UnaryExpression(*op, right))
+            Some(Expression::UnaryExpression(*op, right))
         } else if let Some(left) = parse_expression(&tokens[..lowest_index]) {
-            Some(AstNode::BinaryExpression(Box::new(left), *op, right))
+            Some(Expression::BinaryExpression(Box::new(left), *op, right))
         } else {
             None
         };
@@ -49,12 +49,12 @@ fn lowest_op(tokens: &[Token]) -> Option<usize> {
     if lowest == i32::MAX { None } else { Some(lowest_index) }
 }
 
-fn parse_atom(tokens: &[Token]) -> Option<AstNode> {
+fn parse_atom(tokens: &[Token]) -> Option<Expression> {
     let token = tokens.first();
     if let Some(token) = token {
         let result = match token {
-            Token::Number(n) => Some(AstNode::Number(n.clone())),
-            Token::Identifier(v) => Some(AstNode::Variable(v.clone())),
+            Token::Number(n) => Some(Expression::Number(n.clone())),
+            Token::Identifier(v) => Some(Expression::Variable(v.clone())),
             Token::OpenParen => {
                 let mut depth = 1;
                 let mut i = 1;
@@ -73,31 +73,5 @@ fn parse_atom(tokens: &[Token]) -> Option<AstNode> {
         result
     } else {
         None
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum AstNode {
-    Number(BigInt),
-    Variable(String),
-    UnaryExpression(Operator, Box<AstNode>),
-    BinaryExpression(Box<AstNode>, Operator, Box<AstNode>),
-}
-
-impl AstNode {
-    pub fn walk(&self, f: &dyn Fn(&AstNode)) -> AstNode {
-        f(self);
-        match self {
-            AstNode::Number(_) => self.clone(),
-            AstNode::Variable(_) => self.clone(),
-            AstNode::UnaryExpression(op, node) =>
-                AstNode::UnaryExpression(*op, Box::new(node.walk(f))),
-            AstNode::BinaryExpression(left, op, right) =>
-                AstNode::BinaryExpression(
-                    Box::new(left.walk(f)),
-                    *op,
-                    Box::new(right.walk(f)),
-                )
-        }
     }
 }

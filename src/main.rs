@@ -1,6 +1,7 @@
 extern crate core;
 
 mod parsing;
+mod equation;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -9,4 +10,6 @@ fn main() {
     println!("{:?}", tokens);
     let parsed = parsing::parse(&tokens);
     println!("{:?}", parsed);
+    let solved = equation::solve_equation(&parsed.unwrap());
+    println!("{:?}", solved);
 }

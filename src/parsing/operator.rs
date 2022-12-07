@@ -94,4 +94,33 @@ impl Operator {
             Operator::Not | Operator::Negate | Operator::Size => 7
         }
     }
+
+    pub fn inverse(&self) -> Option<Operator> {
+        match self {
+            Operator::Plus => Some(Operator::Minus),
+            Operator::Minus => Some(Operator::Plus),
+            Operator::Multiply => Some(Operator::Divide),
+            Operator::Divide => Some(Operator::Multiply),
+            Operator::Negate => Some(Operator::Negate),
+            Operator::Equal => Some(Operator::NotEqual),
+            Operator::NotEqual => Some(Operator::Equal),
+            Operator::LessThan => Some(Operator::GreaterThanEqual),
+            Operator::GreaterThan => Some(Operator::LessThanEqual),
+            Operator::LessThanEqual => Some(Operator::GreaterThan),
+            Operator::GreaterThanEqual => Some(Operator::LessThan),
+            Operator::Or => Some(Operator::And),
+            Operator::And => Some(Operator::Or),
+            Operator::Not => Some(Operator::Not),
+            Operator::Contains => Some(Operator::NotContains),
+            Operator::NotContains => Some(Operator::Contains),
+            Operator::Subset => Some(Operator::StrictSuperset),
+            Operator::StrictSubset => Some(Operator::Superset),
+            Operator::Superset => Some(Operator::StrictSubset),
+            Operator::StrictSuperset => Some(Operator::Subset),
+            Operator::Union => Some(Operator::Intersection),
+            Operator::Intersection => Some(Operator::Union),
+            Operator::SymmetricDifference => Some(Operator::Intersection),
+            _ => None
+        }
+    }
 }
