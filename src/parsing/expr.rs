@@ -1,7 +1,9 @@
-use super::Operator;
 use core::clone::Clone;
 use core::cmp::PartialEq;
+
 use num_bigint::BigInt;
+
+use super::Operator;
 
 #[derive(Debug)]
 pub enum Expression {
@@ -32,6 +34,13 @@ impl Expression {
             Expression::BinaryExpression(_, op, _) => op,
             Expression::UnaryExpression(op, _) => op,
             _ => panic!("Expected expression")
+        }
+    }
+
+    pub fn number(&self) -> &BigInt {
+        match self {
+            Expression::Number(n) => n,
+            _ => panic!("Expected number")
         }
     }
 }

@@ -1,6 +1,6 @@
 use crate::parsing::expr::Expression;
-use super::lexer::Token;
 
+use super::lexer::Token;
 
 pub fn parse(tokens: &Vec<Token>) -> Option<Expression> {
     parse_expression(tokens)
@@ -52,7 +52,7 @@ fn lowest_op(tokens: &[Token]) -> Option<usize> {
 fn parse_atom(tokens: &[Token]) -> Option<Expression> {
     let token = tokens.first();
     if let Some(token) = token {
-        let result = match token {
+        match token {
             Token::Number(n) => Some(Expression::Number(n.clone())),
             Token::Identifier(v) => Some(Expression::Variable(v.clone())),
             Token::OpenParen => {
@@ -69,8 +69,7 @@ fn parse_atom(tokens: &[Token]) -> Option<Expression> {
                 parse_expression(&tokens[1..i - 1])
             }
             _ => None
-        };
-        result
+        }
     } else {
         None
     }
